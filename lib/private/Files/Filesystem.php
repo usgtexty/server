@@ -819,7 +819,7 @@ class Filesystem {
 		return '.hidden_' . \OC_Util::getInstanceId();
 	}
 
-	public static function isPathHidden($path): string {
+	public static function isPathHidden($path): bool {
 		return strpos($path, self::getHiddenFolderName()) !== false;
 	}
 }

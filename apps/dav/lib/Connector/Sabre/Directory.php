@@ -276,11 +276,11 @@ class Directory extends \OCA\DAV\Connector\Sabre\Node implements \Sabre\DAV\ICol
 			throw new Locked();
 		}
 
-		$hiddenName = Filesystem::getHiddenFolderName();
+		$hiddenFolderName = Filesystem::getHiddenFolderName();
 
 		$nodes = [];
 		foreach ($folderContent as $info) {
-			if ($info->getName() !== $hiddenName) {
+			if ($info->getName() !== $hiddenFolderName) {
 				$node = $this->getChild($info->getName(), $info);
 				$nodes[] = $node;
 			}
