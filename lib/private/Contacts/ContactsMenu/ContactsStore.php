@@ -143,7 +143,7 @@ class ContactsStore implements IContactsStore {
 		$excludedGroups = $this->config->getAppValue('core', 'shareapi_exclude_groups', 'no') === 'yes';
 
 		// whether to filter out local users
-		$skipLocal = false;
+		$skipLocal = true;
 		// whether to filter out all users which don't have a common group as the current user
 		$ownGroupsOnly = $this->config->getAppValue('core', 'shareapi_only_share_with_group_members', 'no') === 'yes';
 

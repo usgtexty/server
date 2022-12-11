@@ -64,11 +64,11 @@ class Personal implements ISettings {
 	 */
 	public function getForm() {
 		$cloudID = $this->userSession->getUser()->getCloudId();
-		$url = 'https://nextcloud.com/sharing#' . $cloudID;
+		$url = 'https://bitnext.app/sharing#' . $cloudID;
 
 		$parameters = [
-			'message_with_URL' => $this->l->t('Share with me through my #Nextcloud Federated Cloud ID, see %s', [$url]),
-			'message_without_URL' => $this->l->t('Share with me through my #Nextcloud Federated Cloud ID', [$cloudID]),
+			'message_with_URL' => $this->l->t('Share with me through my #bitnext Federated Cloud ID, see %s', [$url]),
+			'message_without_URL' => $this->l->t('Share with me through my #bitnext Federated Cloud ID', [$cloudID]),
 			'logoPath' => $this->defaults->getLogo(),
 			'reference' => $url,
 			'cloudId' => $cloudID,

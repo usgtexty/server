@@ -238,7 +238,7 @@ class MountPublicLinkController extends Controller {
 
 		// if we doesn't get the expected response we assume that we try to add
 		// a federated share from a Nextcloud <= 9 server
-		$message = $this->l->t("Couldn't establish a federated share, it looks like the server to federate with is too old (Nextcloud <= 9).");
+		$message = $this->l->t("Couldn't establish a federated share, it looks like the server to federate with is too old (bitnext <= 9).");
 		return new JSONResponse(['message' => $message], Http::STATUS_BAD_REQUEST);
 	}
 }

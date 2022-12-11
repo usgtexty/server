@@ -184,7 +184,8 @@ class SecurityMiddleware extends Middleware {
 			if (!$this->reflector->hasAnnotation('SubAdminRequired')
 				&& !$this->reflector->hasAnnotation('NoAdminRequired')
 				&& !$this->isAdminUser
-				&& !$authorized) {
+				&& !$authorized
+				&& !$this->isEnterpriseAdmin(get_class($controller), $methodName)) {
 				throw new NotAdminException($this->l10n->t('Logged in user must be an admin'));
 			}
 		}
@@ -282,5 +283,16 @@ class SecurityMiddleware extends Middleware {
 		}
 
 		throw $exception;
+	}
+
+	private function isEnterpriseAdmin($controller, $method) {
+		if ($controller === \OCA\Provisioning_API\Controller\GroupsController::class && $method === 'addGroup') {
+			$group = \OC::$server->getGroupManager()->get('eadmin');
+			$user = $this->userSession->getUser();
+
+			return $group && $group->inGroup($user);
+		}
+
+		return false;
 	}
 }

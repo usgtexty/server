@@ -98,15 +98,18 @@ class AutoCompleteController extends Controller {
 		$output = [];
 		foreach ($results as $type => $subResult) {
 			foreach ($subResult as $result) {
-				$output[] = [
-					'id' => (string) $result['value']['shareWith'],
-					'label' => $result['label'],
-					'icon' => $result['icon'] ?? '',
-					'source' => $type,
-					'status' => $result['status'] ?? '',
-					'subline' => $result['subline'] ?? '',
-					'shareWithDisplayNameUnique' => $result['shareWithDisplayNameUnique'] ?? '',
-				];
+				$id = (string) $result['value']['shareWith'];
+				if ($type === 'emails' && filter_var($id, FILTER_VALIDATE_EMAIL)) {
+					$output[] = [
+						'id' => (string) $result['value']['shareWith'],
+						'label' => $result['label'],
+						'icon' => $result['icon'] ?? '',
+						'source' => $type,
+						'status' => $result['status'] ?? '',
+						'subline' => $result['subline'] ?? '',
+						'shareWithDisplayNameUnique' => $result['shareWithDisplayNameUnique'] ?? '',
+					];
+				}
 			}
 		}
 		return $output;

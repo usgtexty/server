@@ -176,7 +176,7 @@ class TrustedServers {
 				$isValidNextcloud = $this->checkNextcloudVersion($body);
 			}
 		} catch (\Exception $e) {
-			$this->logger->error('No Nextcloud server.', [
+			$this->logger->error('No bitnext server.', [
 				'app' => 'federation',
 				'exception' => $e,
 			]);
