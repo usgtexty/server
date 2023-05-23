@@ -39,6 +39,7 @@ use OC\Authentication\Login\Chain;
 use OC\Authentication\Login\LoginData;
 use OC\Authentication\WebAuthn\Manager as WebAuthnManager;
 use OC\Security\Bruteforce\Throttler;
+use OC\Security\CSRF\CsrfValidator;
 use OC\User\Session;
 use OC_App;
 use OCP\AppFramework\Controller;
@@ -79,6 +80,7 @@ class LoginController extends Controller {
 		private WebAuthnManager $webAuthnManager,
 		private IManager $manager,
 		private IL10N $l10n,
+		private CsrfValidator $csrfValidator,
 	) {
 		parent::__construct($appName, $request);
 	}
@@ -276,7 +278,7 @@ class LoginController extends Controller {
 							 string $redirect_url = null,
 							 string $timezone = '',
 							 string $timezone_offset = ''): RedirectResponse {
-		if (!$this->request->passesCSRFCheck()) {
+		if (!$this->csrfValidator->validate($this->request)) {
 			if ($this->userSession->isLoggedIn()) {
 				// If the user is already logged in and the CSRF check does not pass then
 				// simply redirect the user to the correct page as required. This is the
