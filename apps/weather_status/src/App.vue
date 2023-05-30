@@ -1,8 +1,9 @@
 <!--
   - @copyright Copyright (c) 2020 Julien Veyssier <eneiluj@posteo.net>
+  -
   - @author Julien Veyssier <eneiluj@posteo.net>
   -
-  - @license GNU AGPL version 3 or any later version
+  - @license AGPL-3.0-or-later
   -
   - This program is free software: you can redistribute it and/or modify
   - it under the terms of the GNU Affero General Public License as
@@ -65,20 +66,16 @@
 					{{ t('weather_status', 'Set custom address') }}
 				</NcActionInput>
 				<NcActionButton v-show="favorites.length > 0"
+					ref="favoritesToggle"
 					:icon="toggleFavoritesIcon"
 					:aria-hidden="true"
-					@click="showFavorites = !showFavorites">
+					@click="toggleFavorites">
 					{{ t('weather_status', 'Favorites') }}
 				</NcActionButton>
-				<NcActionButton v-for="favorite in displayedFavorites"
-					:key="favorite"
-					:aria-hidden="true"
-					@click="onFavoriteClick($event, favorite)">
-					<template #icon>
-						<IconStar :size="20" :class="{'favorite-color': address === favorite}" />
-					</template>
-					{{ favorite }}
-				</NcActionButton>
+				<FavoritesList v-show="showFavorites"
+					:id="favoritesId"
+					:current="address"
+					:favorites="displayedFavorites" />
 			</NcActions>
 		</div>
 	</li>
@@ -97,6 +94,7 @@ import NcActionLink from '@nextcloud/vue/dist/Components/NcActionLink.js'
 import NcActionSeparator from '@nextcloud/vue/dist/Components/NcActionSeparator.js'
 import NcActionText from '@nextcloud/vue/dist/Components/NcActionText.js'
 import * as network from './services/weatherStatusService.js'
+import FavoritesList from './components/FavoritesList.vue'
 
 const MODE_BROWSER_LOCATION = 1
 const MODE_MANUAL_LOCATION = 2
@@ -208,6 +206,7 @@ const weatherOptions = {
 export default {
 	name: 'App',
 	components: {
+		FavoritesList,
 		IconStar,
 		NcActions,
 		NcActionButton,
@@ -236,7 +235,8 @@ export default {
 			forecasts: [],
 			loop: null,
 			favorites: [],
-			showFavorites: false,
+			showFavorites: true,
+			favoritesId: 'weather-favlist-' + Math.random().toString(36).replace(/[^a-z]+/g, '').slice(0, 5),
 		}
 	},
 	computed: {
@@ -322,8 +322,19 @@ export default {
 	},
 	mounted() {
 		this.initWeatherStatus()
+		// Initially call this function to make sure aria attributes are set
+		this.toggleFavorites()
 	},
 	methods: {
+		/** Toggle display state of the favorites list and set aria attributes for accordeon button */
+		toggleFavorites() {
+			this.showFavorites = !this.showFavorites
+			this.$nextTick(() => {
+				const button = this.$refs.favoritesToggle.$el.querySelector('button')
+				button.setAttribute('aria-expanded', this.showFavorites)
+				button.setAttribute('aria-controls', this.favoritesId)
+			})
+		},
 		async initWeatherStatus() {
 			try {
 				const loc = await network.getLocation()
