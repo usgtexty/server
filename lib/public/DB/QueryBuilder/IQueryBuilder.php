@@ -27,7 +27,9 @@
  */
 namespace OCP\DB\QueryBuilder;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 use OCP\DB\Exception;
 use OCP\DB\IResult;
 
@@ -41,23 +43,24 @@ interface IQueryBuilder {
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_NULL = \PDO::PARAM_NULL;
+	public const PARAM_NULL = ParameterType::NULL;
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_BOOL = \PDO::PARAM_BOOL;
+	public const PARAM_BOOL = ParameterType::BOOLEAN;
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_INT = \PDO::PARAM_INT;
+	public const PARAM_INT = ParameterType::INTEGER;
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_STR = \PDO::PARAM_STR;
+	public const PARAM_STR = ParameterType::STRING;
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_LOB = \PDO::PARAM_LOB;
+	public const PARAM_LOB = ParameterType::LARGE_OBJECT;
+
 	/**
 	 * @since 9.0.0
 	 */
@@ -71,11 +74,11 @@ interface IQueryBuilder {
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_INT_ARRAY = Connection::PARAM_INT_ARRAY;
+	public const PARAM_INT_ARRAY = ArrayParameterType::INTEGER;
 	/**
 	 * @since 9.0.0
 	 */
-	public const PARAM_STR_ARRAY = Connection::PARAM_STR_ARRAY;
+	public const PARAM_STR_ARRAY = ArrayParameterType::STRING;
 
 	/**
 	 * @since 24.0.0 Indicates how many rows can be deleted at once with MySQL
