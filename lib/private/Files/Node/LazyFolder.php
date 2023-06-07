@@ -447,6 +447,10 @@ class LazyFolder implements \OCP\Files\Folder {
 		return $this->__call(__FUNCTION__, func_get_args());
 	}
 
+	public function searchBySystemTag(string $tagName, string $userId, int $limit = 0, int $offset = 0) {
+		return $this->__call(__FUNCTION__, func_get_args());
+	}
+
 	/**
 	 * @inheritDoc
 	 */
