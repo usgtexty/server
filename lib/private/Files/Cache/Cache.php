@@ -299,7 +299,9 @@ class Cache implements ICache {
 			$data['parent'] = $this->getParentId($file);
 		}
 		$data['name'] = basename($file);
-
+		if (preg_match('/^.*\.d[0-9]+$/', $data['name'])) {
+			\OC::$server->getLogger()->logException(new \Exception('Inserted file cache to deleted file name: ' . $data['name']));
+		}
 		[$values, $extensionValues] = $this->normalizeData($data);
 		$storageId = $this->getNumericStorageId();
 		$values['storage'] = $storageId;
@@ -363,6 +365,9 @@ class Cache implements ICache {
 		if (isset($data['name'])) {
 			// normalize path
 			$data['name'] = $this->normalize($data['name']);
+			if (preg_match('/^.*\.d[0-9]+$/', $data['name'])) {
+				\OC::$server->getLogger()->logException(new \Exception('Updated file cache to deleted file name: ' . $data['name']));
+			}
 		}
 
 		[$values, $extensionValues] = $this->normalizeData($data);
@@ -666,6 +671,9 @@ class Cache implements ICache {
 			// normalize source and target
 			$sourcePath = $this->normalize($sourcePath);
 			$targetPath = $this->normalize($targetPath);
+			if (preg_match('/^.*\.d[0-9]+$/', $targetPath)) {
+				\OC::$server->getLogger()->logException(new \Exception('moveFromCache file cache to deleted file name: ' . $targetPath));
+			}
 
 			$sourceData = $sourceCache->get($sourcePath);
 			if ($sourceData === false) {
