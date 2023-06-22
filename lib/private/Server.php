@@ -68,6 +68,7 @@ use OC\Authentication\Listeners\UserLoggedInListener;
 use OC\Authentication\LoginCredentials\Store;
 use OC\Authentication\Token\IProvider;
 use OC\Avatar\AvatarManager;
+use OC\Circles\UnavailableEntityManager;
 use OC\Collaboration\Collaborators\GroupPlugin;
 use OC\Collaboration\Collaborators\MailPlugin;
 use OC\Collaboration\Collaborators\RemoteGroupPlugin;
@@ -166,6 +167,7 @@ use OCP\App\IAppManager;
 use OCP\Authentication\LoginCredentials\IStore;
 use OCP\Authentication\Token\IProvider as OCPIProvider;
 use OCP\BackgroundJob\IJobList;
+use OCP\Circles\IEntity;
 use OCP\Collaboration\AutoComplete\IManager;
 use OCP\Collaboration\Reference\IReferenceManager;
 use OCP\Command\IBus;
@@ -1443,6 +1445,8 @@ class Server extends ServerContainer implements IServerContainer {
 		$this->registerAlias(IStorageFactory::class, StorageFactory::class);
 
 		$this->registerAlias(\OCP\Dashboard\IManager::class, \OC\Dashboard\Manager::class);
+
+		$this->registerAlias(IEntity::class, UnavailableEntityManager::class);
 
 		$this->registerAlias(IFullTextSearchManager::class, FullTextSearchManager::class);
 
