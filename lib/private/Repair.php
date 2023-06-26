@@ -174,7 +174,6 @@ class Repair implements IOutput {
 	public static function getRepairSteps(): array {
 		return [
 			new Collation(\OC::$server->getConfig(), \OC::$server->get(LoggerInterface::class), \OC::$server->getDatabaseConnection(), false),
-			new RepairMimeTypes(\OC::$server->getConfig(), \OC::$server->getDatabaseConnection()),
 			new CleanTags(\OC::$server->getDatabaseConnection(), \OC::$server->getUserManager()),
 			new RepairInvalidShares(\OC::$server->getConfig(), \OC::$server->getDatabaseConnection()),
 			new MoveUpdaterStepFile(\OC::$server->getConfig()),
@@ -223,6 +222,7 @@ class Repair implements IOutput {
 		return [
 			new OldGroupMembershipShares(\OC::$server->getDatabaseConnection(), \OC::$server->getGroupManager()),
 			\OC::$server->get(ValidatePhoneNumber::class),
+			\OCP\Server::get(RepairMimeTypes::class),
 		];
 	}
 
