@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace OC\Security\CSRF;
 
 use OC\Security\CSRF\TokenStorage\SessionStorage;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class CsrfTokenManager is the manager for all CSRF token related activities.
@@ -63,9 +64,11 @@ class CsrfTokenManager {
 
 		if ($this->sessionStorage->hasToken()) {
 			$value = $this->sessionStorage->getToken();
+			\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::getToken from session ' . $value);
 		} else {
 			$value = $this->tokenGenerator->generateToken();
 			$this->sessionStorage->setToken($value);
+			\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::getToken generate session ' . $value);
 		}
 
 		$this->csrfToken = new CsrfToken($value);
@@ -81,6 +84,7 @@ class CsrfTokenManager {
 		$value = $this->tokenGenerator->generateToken();
 		$this->sessionStorage->setToken($value);
 		$this->csrfToken = new CsrfToken($value);
+		\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::refreshToken ' . $value);
 		return $this->csrfToken;
 	}
 
@@ -88,6 +92,7 @@ class CsrfTokenManager {
 	 * Remove the current token from the storage.
 	 */
 	public function removeToken() {
+		\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::removeToken ');
 		$this->csrfToken = null;
 		$this->sessionStorage->removeToken();
 	}
@@ -100,9 +105,11 @@ class CsrfTokenManager {
 	 */
 	public function isTokenValid(CsrfToken $token): bool {
 		if (!$this->sessionStorage->hasToken()) {
+			\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::isTokenValid no token');
 			return false;
 		}
 
+		\OCP\Server::get(LoggerInterface::class)->info('CsrfTokenManager::isTokenValid ' . $this->sessionStorage->getToken() . ' - ' . $token->getDecryptedValue());
 		return hash_equals(
 			$this->sessionStorage->getToken(),
 			$token->getDecryptedValue()

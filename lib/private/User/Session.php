@@ -929,6 +929,7 @@ class Session implements IUserSession, Emitter {
 	 * logout the user from the session
 	 */
 	public function logout() {
+		\OCP\Server::get(LoggerInterface::class)->info('UserSession::logout', ['exception' => new \Exception()]);
 		$user = $this->getUser();
 		$this->manager->emit('\OC\User', 'logout', [$user]);
 		if ($user !== null) {
