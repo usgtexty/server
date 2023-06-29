@@ -25,6 +25,7 @@ declare(strict_types=1);
  */
 namespace OCA\ContactsInteraction\Listeners;
 
+use OCA\ContactsInteraction\AppInfo\Application;
 use OCA\ContactsInteraction\Db\CardSearchDao;
 use OCA\ContactsInteraction\Db\RecentContact;
 use OCA\ContactsInteraction\Db\RecentContactMapper;
@@ -33,6 +34,7 @@ use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\Contacts\Events\ContactInteractedWithEvent;
 use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventListener;
+use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IL10N;
 use OCP\IUserManager;
@@ -46,28 +48,14 @@ class ContactInteractionListener implements IEventListener {
 
 	use TTransactional;
 
-	private RecentContactMapper $mapper;
-	private CardSearchDao $cardSearchDao;
-	private IUserManager $userManager;
-	private IDBConnection $dbConnection;
-	private ITimeFactory $timeFactory;
-	private IL10N $l10n;
-	private LoggerInterface $logger;
-
-	public function __construct(RecentContactMapper $mapper,
-								CardSearchDao $cardSearchDao,
-								IUserManager $userManager,
-								IDBConnection $connection,
-								ITimeFactory $timeFactory,
-								IL10N $l10nFactory,
-								LoggerInterface $logger) {
-		$this->mapper = $mapper;
-		$this->cardSearchDao = $cardSearchDao;
-		$this->userManager = $userManager;
-		$this->dbConnection = $connection;
-		$this->timeFactory = $timeFactory;
-		$this->l10n = $l10nFactory;
-		$this->logger = $logger;
+	public function __construct(private RecentContactMapper $mapper,
+								private CardSearchDao $cardSearchDao,
+								private IUserManager $userManager,
+								private IDBConnection $connection,
+								private ITimeFactory $timeFactory,
+								private IL10N $l10n,
+								private IConfig $config,
+								private LoggerInterface $logger) {
 	}
 
 	public function handle(Event $event): void {
@@ -85,6 +73,11 @@ class ContactInteractionListener implements IEventListener {
 			return;
 		}
 
+		if ($this->config->getUserValue($event->getActor()->getUID(), Application::APP_ID, 'generateContactsInteraction', 'yes') === 'no') {
+			$this->logger->debug("Ignoring contact interaction as it's disabled for this user");
+			return;
+		}
+
 		$this->atomic(function () use ($event) {
 			$uid = $event->getUid();
 			$email = $event->getEmail();
@@ -96,9 +89,9 @@ class ContactInteractionListener implements IEventListener {
 				$federatedCloudId
 			);
 			if (!empty($existing)) {
-				$now = $this->timeFactory->getTime();
+				$now = $this->timeFactory->now();
 				foreach ($existing as $c) {
-					$c->setLastContact($now);
+					$c->setLastContact($now->getTimestamp());
 					$this->mapper->update($c);
 				}
 
@@ -116,7 +109,7 @@ class ContactInteractionListener implements IEventListener {
 			if ($federatedCloudId !== null) {
 				$contact->setFederatedCloudId($federatedCloudId);
 			}
-			$contact->setLastContact($this->timeFactory->getTime());
+			$contact->setLastContact($this->timeFactory->now()->getTimestamp());
 
 			$copy = $this->cardSearchDao->findExisting(
 				$event->getActor(),
@@ -141,7 +134,7 @@ class ContactInteractionListener implements IEventListener {
 				$contact->setCard($this->generateCard($contact));
 			}
 			$this->mapper->insert($contact);
-		}, $this->dbConnection);
+		}, $this->connection);
 	}
 
 	private function getDisplayName(?string $uid): ?string {

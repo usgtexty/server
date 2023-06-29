@@ -27,6 +27,9 @@ module.exports = {
 		'comments-app': path.join(__dirname, 'apps/comments/src', 'comments-app.js'),
 		'comments-tab': path.join(__dirname, 'apps/comments/src', 'comments-tab.js'),
 	},
+	contactsinteraction: {
+		'settings-personal': path.join(__dirname, 'apps/contactsinteraction/src', 'Settings.js'),
+	},
 	core: {
 		files_client: path.join(__dirname, 'core/src', 'files/client.js'),
 		files_fileinfo: path.join(__dirname, 'core/src', 'files/fileinfo.js'),
