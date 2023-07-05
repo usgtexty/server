@@ -1167,7 +1167,6 @@ return array(
     'OC\\DB\\QueryBuilder\\QueryFunction' => $baseDir . '/lib/private/DB/QueryBuilder/QueryFunction.php',
     'OC\\DB\\QueryBuilder\\QuoteHelper' => $baseDir . '/lib/private/DB/QueryBuilder/QuoteHelper.php',
     'OC\\DB\\ResultAdapter' => $baseDir . '/lib/private/DB/ResultAdapter.php',
-    'OC\\DB\\SQLiteMigrator' => $baseDir . '/lib/private/DB/SQLiteMigrator.php',
     'OC\\DB\\SQLiteSessionInit' => $baseDir . '/lib/private/DB/SQLiteSessionInit.php',
     'OC\\DB\\SchemaWrapper' => $baseDir . '/lib/private/DB/SchemaWrapper.php',
     'OC\\DB\\SetTransactionIsolationLevel' => $baseDir . '/lib/private/DB/SetTransactionIsolationLevel.php',

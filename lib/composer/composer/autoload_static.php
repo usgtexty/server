@@ -1200,7 +1200,6 @@ class ComposerStaticInit749170dad3f5e7f9ca158f5a9f04f6a2
         'OC\\DB\\QueryBuilder\\QueryFunction' => __DIR__ . '/../../..' . '/lib/private/DB/QueryBuilder/QueryFunction.php',
         'OC\\DB\\QueryBuilder\\QuoteHelper' => __DIR__ . '/../../..' . '/lib/private/DB/QueryBuilder/QuoteHelper.php',
         'OC\\DB\\ResultAdapter' => __DIR__ . '/../../..' . '/lib/private/DB/ResultAdapter.php',
-        'OC\\DB\\SQLiteMigrator' => __DIR__ . '/../../..' . '/lib/private/DB/SQLiteMigrator.php',
         'OC\\DB\\SQLiteSessionInit' => __DIR__ . '/../../..' . '/lib/private/DB/SQLiteSessionInit.php',
         'OC\\DB\\SchemaWrapper' => __DIR__ . '/../../..' . '/lib/private/DB/SchemaWrapper.php',
         'OC\\DB\\SetTransactionIsolationLevel' => __DIR__ . '/../../..' . '/lib/private/DB/SetTransactionIsolationLevel.php',

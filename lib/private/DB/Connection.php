@@ -591,16 +591,12 @@ class Connection extends \Doctrine\DBAL\Connection {
 
 	private function getMigrator() {
 		// TODO properly inject those dependencies
-		$random = \OC::$server->getSecureRandom();
 		$platform = $this->getDatabasePlatform();
 		$config = \OC::$server->getConfig();
 		$dispatcher = \OC::$server->get(\OCP\EventDispatcher\IEventDispatcher::class);
-		if ($platform instanceof SqlitePlatform) {
-			return new SQLiteMigrator($this, $config, $dispatcher);
-		} elseif ($platform instanceof OraclePlatform) {
+		if ($platform instanceof OraclePlatform) {
 			return new OracleMigrator($this, $config, $dispatcher);
-		} else {
-			return new Migrator($this, $config, $dispatcher);
 		}
+		return new Migrator($this, $config, $dispatcher);
 	}
 }
