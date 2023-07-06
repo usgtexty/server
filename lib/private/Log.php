@@ -68,6 +68,7 @@ class Log implements ILogger, IDataLogger {
 	private ?Normalizer $normalizer;
 	private ?IRegistry $crashReporters;
 	private ?IEventDispatcher $eventDispatcher;
+	private int $lastLogTime = 0;
 
 	/**
 	 * @param IWriter $logger The logger that should be used
@@ -219,6 +220,10 @@ class Log implements ILogger, IDataLogger {
 
 		if ($this->eventDispatcher) {
 			$this->eventDispatcher->dispatchTyped(new BeforeMessageLoggedEvent($app, $level, $entry));
+		}
+
+		if (!isset($entry['Exception']) && !isset($entry['exception'])) {
+			$entry['backtrace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		}
 
 		try {
