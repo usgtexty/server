@@ -213,6 +213,10 @@ class Log implements ILogger, IDataLogger {
 		$app = $context['app'] ?? 'no app in context';
 		$entry = $this->interpolateMessage($context, $message);
 
+		if (!isset($entry['Exception']) && !isset($entry['exception'])) {
+			$entry['backtrace'] = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		}
+
 		try {
 			if ($level >= $minLevel) {
 				$this->writeLog($app, $entry, $level);
