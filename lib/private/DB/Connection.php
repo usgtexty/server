@@ -302,10 +302,16 @@ class Connection extends \Doctrine\DBAL\Connection {
 			if ($this->systemConfig->getValue('query_log_file_requestid') === 'yes') {
 				$prefix .= \OC::$server->get(IRequestId::class)->getId() . "\t";
 			}
+			$postfix = '';
+			if ($this->systemConfig->getValue('query_log_file_backtrace') === 'yes') {
+				$trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+				array_pop($trace);
+				$postfix .= '; ' . json_encode($trace);
+			}
 
 			file_put_contents(
 				$this->systemConfig->getValue('query_log_file', ''),
-				$prefix . $sql . "\n",
+				$prefix . $sql . $postfix . "\n",
 				FILE_APPEND
 			);
 		}
