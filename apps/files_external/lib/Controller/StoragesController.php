@@ -34,6 +34,7 @@ use OCA\Files_External\Lib\DefinitionParameter;
 use OCA\Files_External\Lib\InsufficientDataForMeaningfulAnswerException;
 use OCA\Files_External\Lib\StorageConfig;
 use OCA\Files_External\NotFoundException;
+use OCA\Files_External\Service\BackendService;
 use OCA\Files_External\Service\StoragesService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -42,75 +43,27 @@ use OCP\Files\StorageNotAvailableException;
 use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\IL10N;
-use OCP\ILogger;
 use OCP\IRequest;
 use OCP\IUserSession;
+use Psr\Log\LoggerInterface;
 
 /**
  * Base class for storages controllers
  */
 abstract class StoragesController extends Controller {
 
-	/**
-	 * L10N service
-	 *
-	 * @var IL10N
-	 */
-	protected $l10n;
-
-	/**
-	 * Storages service
-	 *
-	 * @var StoragesService
-	 */
-	protected $service;
-
-	/**
-	 * @var ILogger
-	 */
-	protected $logger;
-
-	/**
-	 * @var IUserSession
-	 */
-	protected $userSession;
-
-	/**
-	 * @var IGroupManager
-	 */
-	protected $groupManager;
-
-	/**
-	 * @var IConfig
-	 */
-	protected $config;
-
-	/**
-	 * Creates a new storages controller.
-	 *
-	 * @param string $AppName application name
-	 * @param IRequest $request request object
-	 * @param IL10N $l10n l10n service
-	 * @param StoragesService $storagesService storage service
-	 * @param ILogger $logger
-	 */
 	public function __construct(
-		$AppName,
+		string $appName,
 		IRequest $request,
-		IL10N $l10n,
-		StoragesService $storagesService,
-		ILogger $logger,
-		IUserSession $userSession,
-		IGroupManager $groupManager,
-		IConfig $config
+		protected IL10N $l10n,
+		protected StoragesService $service,
+		protected LoggerInterface $logger,
+		protected IUserSession $userSession,
+		protected IGroupManager $groupManager,
+		protected BackendService $backendService,
+		protected IConfig $config
 	) {
-		parent::__construct($AppName, $request);
-		$this->l10n = $l10n;
-		$this->service = $storagesService;
-		$this->logger = $logger;
-		$this->userSession = $userSession;
-		$this->groupManager = $groupManager;
-		$this->config = $config;
+		parent::__construct($appName, $request);
 	}
 
 	/**
@@ -159,7 +112,7 @@ abstract class StoragesController extends Controller {
 				$priority
 			);
 		} catch (\InvalidArgumentException $e) {
-			$this->logger->logException($e);
+			$this->logger->warning('Invalid backend or authentication mechanism class', ['exception' => $e]);
 			return new DataResponse(
 				[
 					'message' => $this->l10n->t('Invalid backend or authentication mechanism class')

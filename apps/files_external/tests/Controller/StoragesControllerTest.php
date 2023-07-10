@@ -34,6 +34,7 @@ use OCA\Files_External\Lib\Backend\Backend;
 use OCA\Files_External\Lib\StorageConfig;
 use OCA\Files_External\NotFoundException;
 use OCA\Files_External\Service\GlobalStoragesService;
+use OCA\Files_External\Service\UserStoragesService;
 use OCP\AppFramework\Http;
 
 abstract class StoragesControllerTest extends \Test\TestCase {
@@ -44,7 +45,7 @@ abstract class StoragesControllerTest extends \Test\TestCase {
 	protected $controller;
 
 	/**
-	 * @var GlobalStoragesService
+	 * @var GlobalStoragesService|UserStoragesService
 	 */
 	protected $service;
 
