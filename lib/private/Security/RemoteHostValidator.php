@@ -44,9 +44,9 @@ final class RemoteHostValidator implements IRemoteHostValidator {
 	private LoggerInterface $logger;
 
 	public function __construct(IConfig $config,
-								HostnameClassifier $hostnameClassifier,
-								IpAddressClassifier $ipAddressClassifier,
-								LoggerInterface $logger) {
+		HostnameClassifier $hostnameClassifier,
+		IpAddressClassifier $ipAddressClassifier,
+		LoggerInterface $logger) {
 		$this->config = $config;
 		$this->hostnameClassifier = $hostnameClassifier;
 		$this->ipAddressClassifier = $ipAddressClassifier;

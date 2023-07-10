@@ -50,7 +50,7 @@ class ContentSecurityPolicyNonceManager {
 	 * @param IRequest $request
 	 */
 	public function __construct(CsrfTokenManager $csrfTokenManager,
-								IRequest $request) {
+		IRequest $request) {
 		$this->csrfTokenManager = $csrfTokenManager;
 		$this->request = $request;
 	}

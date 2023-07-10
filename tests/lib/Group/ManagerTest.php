@@ -24,10 +24,10 @@
 namespace Test\Group;
 
 use OC\Group\Database;
-use OC\User\User;
 use OC\User\Manager;
-use OCP\GroupInterface;
+use OC\User\User;
 use OCP\Group\Backend\ISearchableGroupBackend;
+use OCP\GroupInterface;
 use OCP\ICacheFactory;
 use OCP\IUser;
 use PHPUnit\Framework\MockObject\MockObject;

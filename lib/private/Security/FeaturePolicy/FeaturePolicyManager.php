@@ -61,7 +61,7 @@ class FeaturePolicyManager {
 	 *
 	 */
 	public function mergePolicies(FeaturePolicy $defaultPolicy,
-								  EmptyFeaturePolicy $originalPolicy): FeaturePolicy {
+		EmptyFeaturePolicy $originalPolicy): FeaturePolicy {
 		foreach ((object)(array)$originalPolicy as $name => $value) {
 			$setter = 'set' . ucfirst($name);
 			if (\is_array($value)) {

@@ -74,7 +74,7 @@ class ContentSecurityPolicyManager implements IContentSecurityPolicyManager {
 	 * @return ContentSecurityPolicy
 	 */
 	public function mergePolicies(ContentSecurityPolicy $defaultPolicy,
-								  EmptyContentSecurityPolicy $originalPolicy): ContentSecurityPolicy {
+		EmptyContentSecurityPolicy $originalPolicy): ContentSecurityPolicy {
 		foreach ((object)(array)$originalPolicy as $name => $value) {
 			$setter = 'set'.ucfirst($name);
 			if (\is_array($value)) {

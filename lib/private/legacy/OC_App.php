@@ -51,19 +51,19 @@ declare(strict_types=1);
  *
  */
 
+use OC\App\DependencyAnalyzer;
+use OC\App\Platform;
+use OC\AppFramework\Bootstrap\Coordinator;
+use OC\DB\MigrationService;
+use OC\Installer;
+use OC\Repair;
+use OC\Repair\Events\RepairErrorEvent;
 use OCP\App\Events\AppUpdateEvent;
 use OCP\App\IAppManager;
 use OCP\App\ManagerEvent;
 use OCP\Authentication\IAlternativeLogin;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\ILogger;
-use OC\AppFramework\Bootstrap\Coordinator;
-use OC\App\DependencyAnalyzer;
-use OC\App\Platform;
-use OC\DB\MigrationService;
-use OC\Installer;
-use OC\Repair;
-use OC\Repair\Events\RepairErrorEvent;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Log\LoggerInterface;
 
@@ -252,7 +252,7 @@ class OC_App {
 	 * This function set an app as enabled in appconfig.
 	 */
 	public function enable(string $appId,
-						   array $groups = []) {
+		array $groups = []) {
 		// Check if app is already downloaded
 		/** @var Installer $installer */
 		$installer = \OCP\Server::get(Installer::class);

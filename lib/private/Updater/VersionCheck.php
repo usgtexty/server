@@ -42,7 +42,7 @@ class VersionCheck {
 	 * @param IConfig $config
 	 */
 	public function __construct(IClientService $clientService,
-								IConfig $config) {
+		IConfig $config) {
 		$this->clientService = $clientService;
 		$this->config = $config;
 	}

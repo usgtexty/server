@@ -75,11 +75,11 @@ class UserPlugin implements ISearchPlugin {
 	private $userStatusManager;
 
 	public function __construct(IConfig $config,
-								IUserManager $userManager,
-								IGroupManager $groupManager,
-								IUserSession $userSession,
-								KnownUserService $knownUserService,
-								IUserStatusManager $userStatusManager) {
+		IUserManager $userManager,
+		IGroupManager $groupManager,
+		IUserSession $userSession,
+		KnownUserService $knownUserService,
+		IUserStatusManager $userStatusManager) {
 		$this->config = $config;
 
 		$this->groupManager = $groupManager;

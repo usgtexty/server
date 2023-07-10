@@ -162,8 +162,8 @@ class ShareByMailProviderTest extends TestCase {
 	 * @throws \OCP\DB\Exception
 	 */
 	private function addShareToDB($shareType, $sharedWith, $sharedBy, $shareOwner,
-			$itemType, $fileSource, $fileTarget, $permissions, $token, $expiration,
-			$parent) {
+		$itemType, $fileSource, $fileTarget, $permissions, $token, $expiration,
+		$parent) {
 		$qb = $this->dbConn->getQueryBuilder();
 		$qb->insert('share');
 

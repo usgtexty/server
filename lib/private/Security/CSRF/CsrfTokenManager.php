@@ -46,7 +46,7 @@ class CsrfTokenManager {
 	 * @param SessionStorage $storageInterface
 	 */
 	public function __construct(CsrfTokenGenerator $tokenGenerator,
-								SessionStorage $storageInterface) {
+		SessionStorage $storageInterface) {
 		$this->tokenGenerator = $tokenGenerator;
 		$this->sessionStorage = $storageInterface;
 	}

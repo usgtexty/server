@@ -27,8 +27,8 @@ declare(strict_types=1);
  */
 namespace OC\Security\Bruteforce;
 
-use OCP\Capabilities\IPublicCapability;
 use OCP\Capabilities\IInitialStateExcludedCapability;
+use OCP\Capabilities\IPublicCapability;
 use OCP\IRequest;
 
 class Capabilities implements IPublicCapability, IInitialStateExcludedCapability {
@@ -45,7 +45,7 @@ class Capabilities implements IPublicCapability, IInitialStateExcludedCapability
 	 * @param Throttler $throttler
 	 */
 	public function __construct(IRequest $request,
-								Throttler $throttler) {
+		Throttler $throttler) {
 		$this->request = $request;
 		$this->throttler = $throttler;
 	}

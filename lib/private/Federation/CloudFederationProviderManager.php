@@ -69,9 +69,9 @@ class CloudFederationProviderManager implements ICloudFederationProviderManager 
 	 * @param ICloudIdManager $cloudIdManager
 	 */
 	public function __construct(IAppManager $appManager,
-								IClientService $httpClientService,
-								ICloudIdManager $cloudIdManager,
-								LoggerInterface $logger) {
+		IClientService $httpClientService,
+		ICloudIdManager $cloudIdManager,
+		LoggerInterface $logger) {
 		$this->cloudFederationProvider = [];
 		$this->appManager = $appManager;
 		$this->httpClientService = $httpClientService;

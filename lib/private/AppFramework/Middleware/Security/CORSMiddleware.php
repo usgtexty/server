@@ -64,9 +64,9 @@ class CORSMiddleware extends Middleware {
 	 * @param Throttler $throttler
 	 */
 	public function __construct(IRequest $request,
-								ControllerMethodReflector $reflector,
-								Session $session,
-								Throttler $throttler) {
+		ControllerMethodReflector $reflector,
+		Session $session,
+		Throttler $throttler) {
 		$this->request = $request;
 		$this->reflector = $reflector;
 		$this->session = $session;

@@ -48,10 +48,10 @@ use OCP\IUserManager;
 use OCP\L10N\IFactory;
 use OCP\Server;
 use OCP\Support\Subscription\IAssertion;
-use OCP\User\Backend\IGetRealUIDBackend;
-use OCP\User\Backend\ISearchKnownUsersBackend;
 use OCP\User\Backend\ICheckPasswordBackend;
 use OCP\User\Backend\ICountUsersBackend;
+use OCP\User\Backend\IGetRealUIDBackend;
+use OCP\User\Backend\ISearchKnownUsersBackend;
 use OCP\User\Events\BeforeUserCreatedEvent;
 use OCP\User\Events\UserCreatedEvent;
 use OCP\UserInterface;
@@ -100,9 +100,9 @@ class Manager extends PublicEmitter implements IUserManager {
 	private DisplayNameCache $displayNameCache;
 
 	public function __construct(IConfig $config,
-								EventDispatcherInterface $oldDispatcher,
-								ICacheFactory $cacheFactory,
-								IEventDispatcher $eventDispatcher) {
+		EventDispatcherInterface $oldDispatcher,
+		ICacheFactory $cacheFactory,
+		IEventDispatcher $eventDispatcher) {
 		$this->config = $config;
 		$this->dispatcher = $oldDispatcher;
 		$this->cache = new WithLocalCache($cacheFactory->createDistributed('user_backend_map'));

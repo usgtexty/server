@@ -86,9 +86,9 @@ class Manager extends PublicEmitter implements IGroupManager {
 	private DisplayNameCache $displayNameCache;
 
 	public function __construct(\OC\User\Manager $userManager,
-								EventDispatcherInterface $dispatcher,
-								LoggerInterface $logger,
-								ICacheFactory $cacheFactory) {
+		EventDispatcherInterface $dispatcher,
+		LoggerInterface $logger,
+		ICacheFactory $cacheFactory) {
 		$this->userManager = $userManager;
 		$this->dispatcher = $dispatcher;
 		$this->logger = $logger;

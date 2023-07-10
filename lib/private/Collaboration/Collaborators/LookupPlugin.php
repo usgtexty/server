@@ -50,10 +50,10 @@ class LookupPlugin implements ISearchPlugin {
 	private $logger;
 
 	public function __construct(IConfig $config,
-								IClientService $clientService,
-								IUserSession $userSession,
-								ICloudIdManager $cloudIdManager,
-								LoggerInterface $logger) {
+		IClientService $clientService,
+		IUserSession $userSession,
+		ICloudIdManager $cloudIdManager,
+		LoggerInterface $logger) {
 		$this->config = $config;
 		$this->clientService = $clientService;
 		$this->cloudIdManager = $cloudIdManager;

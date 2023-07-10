@@ -27,8 +27,8 @@ declare(strict_types=1);
 namespace OC\Http\Client;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use OCP\Diagnostics\IEventLogger;
 use OCP\Http\Client\IClient;

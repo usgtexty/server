@@ -37,8 +37,8 @@ declare(strict_types=1);
 namespace OC;
 
 use \OCP\AutoloadNotAllowedException;
-use OCP\ILogger;
 use OCP\ICache;
+use OCP\ILogger;
 
 class Autoloader {
 	/** @var bool */

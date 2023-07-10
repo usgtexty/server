@@ -27,8 +27,8 @@ declare(strict_types=1);
 namespace OC\Files\Node;
 
 use OC\Files\Utils\PathHelper;
-use OCP\Files\Folder;
 use OCP\Constants;
+use OCP\Files\Folder;
 use OCP\Files\Mount\IMountPoint;
 
 /**

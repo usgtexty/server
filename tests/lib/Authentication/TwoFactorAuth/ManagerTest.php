@@ -39,9 +39,9 @@ use OCP\ISession;
 use OCP\IUser;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use function reset;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\TestCase;
+use function reset;
 
 class ManagerTest extends TestCase {
 	/** @var IUser|MockObject */

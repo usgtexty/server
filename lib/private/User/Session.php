@@ -119,14 +119,14 @@ class Session implements IUserSession, Emitter {
 	private $dispatcher;
 
 	public function __construct(Manager $manager,
-								ISession $session,
-								ITimeFactory $timeFactory,
-								?IProvider $tokenProvider,
-								IConfig $config,
-								ISecureRandom $random,
-								ILockdownManager $lockdownManager,
-								LoggerInterface $logger,
-								IEventDispatcher $dispatcher
+		ISession $session,
+		ITimeFactory $timeFactory,
+		?IProvider $tokenProvider,
+		IConfig $config,
+		ISecureRandom $random,
+		ILockdownManager $lockdownManager,
+		LoggerInterface $logger,
+		IEventDispatcher $dispatcher
 	) {
 		$this->manager = $manager;
 		$this->session = $session;
@@ -424,9 +424,9 @@ class Session implements IUserSession, Emitter {
 	 * @return boolean
 	 */
 	public function logClientIn($user,
-								$password,
-								IRequest $request,
-								OC\Security\Bruteforce\Throttler $throttler) {
+		$password,
+		IRequest $request,
+		OC\Security\Bruteforce\Throttler $throttler) {
 		$remoteAddress = $request->getRemoteAddress();
 		$currentDelay = $throttler->sleepDelayOrThrowOnMax($remoteAddress, 'login');
 
@@ -574,7 +574,7 @@ class Session implements IUserSession, Emitter {
 	 * @return boolean if the login was successful
 	 */
 	public function tryBasicAuthLogin(IRequest $request,
-									  OC\Security\Bruteforce\Throttler $throttler) {
+		OC\Security\Bruteforce\Throttler $throttler) {
 		if (!empty($request->server['PHP_AUTH_USER']) && !empty($request->server['PHP_AUTH_PW'])) {
 			try {
 				if ($this->logClientIn($request->server['PHP_AUTH_USER'], $request->server['PHP_AUTH_PW'], $request, $throttler)) {

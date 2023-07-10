@@ -52,9 +52,9 @@ class CertificateManager implements ICertificateManager {
 	private ?string $bundlePath = null;
 
 	public function __construct(View $view,
-								IConfig $config,
-								LoggerInterface $logger,
-								ISecureRandom $random) {
+		IConfig $config,
+		LoggerInterface $logger,
+		ISecureRandom $random) {
 		$this->view = $view;
 		$this->config = $config;
 		$this->logger = $logger;

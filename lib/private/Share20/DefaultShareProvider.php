@@ -94,15 +94,15 @@ class DefaultShareProvider implements IShareProvider {
 	private $config;
 
 	public function __construct(
-			IDBConnection $connection,
-			IUserManager $userManager,
-			IGroupManager $groupManager,
-			IRootFolder $rootFolder,
-			IMailer $mailer,
-			Defaults $defaults,
-			IFactory $l10nFactory,
-			IURLGenerator $urlGenerator,
-			IConfig $config) {
+		IDBConnection $connection,
+		IUserManager $userManager,
+		IGroupManager $groupManager,
+		IRootFolder $rootFolder,
+		IMailer $mailer,
+		Defaults $defaults,
+		IFactory $l10nFactory,
+		IURLGenerator $urlGenerator,
+		IConfig $config) {
 		$this->dbConn = $connection;
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;

@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Test\Http\Client;
 
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use OC\Http\Client\Client;
 use OC\Http\Client\ClientService;

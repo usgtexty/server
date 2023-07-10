@@ -67,9 +67,9 @@ class Throttler implements IThrottler {
 	private $hasAttemptsDeleted = [];
 
 	public function __construct(IDBConnection $db,
-								ITimeFactory $timeFactory,
-								LoggerInterface $logger,
-								IConfig $config) {
+		ITimeFactory $timeFactory,
+		LoggerInterface $logger,
+		IConfig $config) {
 		$this->db = $db;
 		$this->timeFactory = $timeFactory;
 		$this->logger = $logger;
@@ -109,8 +109,8 @@ class Throttler implements IThrottler {
 	 * @param array $metadata Optional metadata logged to the database
 	 */
 	public function registerAttempt(string $action,
-									string $ip,
-									array $metadata = []): void {
+		string $ip,
+		array $metadata = []): void {
 		// No need to log if the bruteforce protection is disabled
 		if (!$this->config->getSystemValueBool('auth.bruteforce.protection.enabled', true)) {
 			return;

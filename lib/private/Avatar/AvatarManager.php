@@ -80,14 +80,14 @@ class AvatarManager implements IAvatarManager {
 	private $knownUserService;
 
 	public function __construct(
-			IUserSession $userSession,
-			Manager $userManager,
-			IAppData $appData,
-			IL10N $l,
-			LoggerInterface $logger,
-			IConfig $config,
-			IAccountManager $accountManager,
-			KnownUserService $knownUserService
+		IUserSession $userSession,
+		Manager $userManager,
+		IAppData $appData,
+		IL10N $l,
+		LoggerInterface $logger,
+		IConfig $config,
+		IAccountManager $accountManager,
+		KnownUserService $knownUserService
 	) {
 		$this->userSession = $userSession;
 		$this->userManager = $userManager;

@@ -37,8 +37,8 @@ use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserSession;
-use OCP\Share\IShare;
 use OCP\Mail\IMailer;
+use OCP\Share\IShare;
 
 class MailPlugin implements ISearchPlugin {
 	/* @var bool */
@@ -71,12 +71,12 @@ class MailPlugin implements ISearchPlugin {
 	private $mailer;
 
 	public function __construct(IManager $contactsManager,
-								ICloudIdManager $cloudIdManager,
-								IConfig $config,
-								IGroupManager $groupManager,
-								KnownUserService $knownUserService,
-								IUserSession $userSession,
-								IMailer $mailer) {
+		ICloudIdManager $cloudIdManager,
+		IConfig $config,
+		IGroupManager $groupManager,
+		KnownUserService $knownUserService,
+		IUserSession $userSession,
+		IMailer $mailer) {
 		$this->contactsManager = $contactsManager;
 		$this->cloudIdManager = $cloudIdManager;
 		$this->config = $config;

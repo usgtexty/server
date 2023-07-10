@@ -41,12 +41,12 @@
  */
 namespace OC\Share20;
 
-use OCP\Cache\CappedMemoryCache;
 use OC\Files\Mount\MoveableMount;
 use OC\KnownUser\KnownUserService;
 use OC\Share20\Exception\ProviderException;
 use OCA\Files_Sharing\AppInfo\Application;
 use OCA\Files_Sharing\ISharedStorage;
+use OCP\Cache\CappedMemoryCache;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Files\File;
 use OCP\Files\Folder;
@@ -885,12 +885,12 @@ class Manager implements IManager {
 	 * @param \DateTime|null $expiration
 	 */
 	protected function sendMailNotification(IL10N $l,
-											$filename,
-											$link,
-											$initiator,
-											$shareWith,
-											\DateTime $expiration = null,
-											$note = '') {
+		$filename,
+		$link,
+		$initiator,
+		$shareWith,
+		\DateTime $expiration = null,
+		$note = '') {
 		$initiatorUser = $this->userManager->get($initiator);
 		$initiatorDisplayName = ($initiatorUser instanceof IUser) ? $initiatorUser->getDisplayName() : $initiator;
 
