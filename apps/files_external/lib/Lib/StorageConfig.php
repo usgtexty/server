@@ -37,7 +37,7 @@ use OCA\Files_External\Lib\Backend\Backend;
  */
 class StorageConfig implements \JsonSerializable {
 	public const MOUNT_TYPE_ADMIN = 1;
-	public const MOUNT_TYPE_PERSONAl = 2;
+	public const MOUNT_TYPE_PERSONAL = 2;
 
 	/**
 	 * Storage config id
@@ -381,14 +381,14 @@ class StorageConfig implements \JsonSerializable {
 	}
 
 	/**
-	 * @return int self::MOUNT_TYPE_ADMIN or self::MOUNT_TYPE_PERSONAl
+	 * @return int self::MOUNT_TYPE_ADMIN or self::MOUNT_TYPE_PERSONAL
 	 */
 	public function getType() {
 		return $this->type;
 	}
 
 	/**
-	 * @param int $type self::MOUNT_TYPE_ADMIN or self::MOUNT_TYPE_PERSONAl
+	 * @param int $type self::MOUNT_TYPE_ADMIN or self::MOUNT_TYPE_PERSONAL
 	 */
 	public function setType($type) {
 		$this->type = $type;
@@ -425,7 +425,7 @@ class StorageConfig implements \JsonSerializable {
 			$result['statusMessage'] = $this->statusMessage;
 		}
 		$result['userProvided'] = $this->authMechanism instanceof IUserProvided;
-		$result['type'] = ($this->getType() === self::MOUNT_TYPE_PERSONAl) ? 'personal': 'system';
+		$result['type'] = ($this->getType() === self::MOUNT_TYPE_PERSONAL) ? 'personal': 'system';
 		return $result;
 	}
 }
