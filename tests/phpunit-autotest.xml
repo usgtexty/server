@@ -12,7 +12,6 @@
 		<directory suffix=".php">lib/</directory>
 		<directory suffix=".php">Core/</directory>
 		<directory suffix=".php">Test/</directory>
-		<file>apps.php</file>
 	</testsuite>
 	<coverage>
 		<include>
