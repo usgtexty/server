@@ -109,14 +109,20 @@ $label-padding: 8px;
 		}
 	}
 
-	&__input:checked + &__label,
-	&__input:focus + &__label,
 	&__label:hover {
 		border-color: var(--color-primary-element);
 	}
 
-	&__label:active {
-		border-color: var(--color-border-dark);
+	&__input:checked + &__label {
+		outline: 2px solid var(--color-main-text);
+		box-shadow: 0 0 0 4px var(--color-main-background);
+	}
+
+	&:not(&--disabled) &__input:hover + &__label,
+	&:not(&--disabled) &__input:focus + &__label {
+		border-color: var(--color-primary-element);
+		outline: 1px solid var(--color-main-text);
+		box-shadow: 0 0 0 2px var(--color-main-background);
 	}
 
 	&__subline {
