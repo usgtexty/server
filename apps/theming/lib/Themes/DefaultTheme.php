@@ -109,9 +109,9 @@ class DefaultTheme implements ITheme {
 		$colorBoxShadow = $this->util->darken($colorMainBackground, 70);
 		$colorBoxShadowRGB = join(',', $this->util->hexToRGB($colorBoxShadow));
 
-		$colorError = '#e9322d';
+		$colorError = '#e71f18';
 		$colorWarning = '#c28900';
-		$colorSuccess = '#3fa857';
+		$colorSuccess = '#328544';
 		$colorInfo = '#006aa3';
 
 		$variables = [
