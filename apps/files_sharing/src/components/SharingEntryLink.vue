@@ -32,6 +32,7 @@
 			<p v-if="subtitle">
 				{{ subtitle }}
 			</p>
+			<QuickShareSelect :options="options" :value.sync="selectedOption" :toggle="showDropdown" />
 		</div>
 
 		<!-- clipboard -->
@@ -292,6 +293,8 @@ import NcActionTextEditable from '@nextcloud/vue/dist/Components/NcActionTextEdi
 import NcActions from '@nextcloud/vue/dist/Components/NcActions.js'
 import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
 
+import QuickShareSelect from './SharingEntryQuickShareSelect.vue'
+
 import ExternalShareAction from './ExternalShareAction.vue'
 import SharePermissionsEditor from './SharePermissionsEditor.vue'
 import GeneratePassword from '../utils/GeneratePassword.js'
@@ -313,6 +316,7 @@ export default {
 		NcAvatar,
 		ExternalShareAction,
 		SharePermissionsEditor,
+		QuickShareSelect,
 	},
 
 	mixins: [SharesMixin],
@@ -330,6 +334,9 @@ export default {
 
 	data() {
 		return {
+			showDropdown: false,
+			selectedOption: 'Can edit',
+			options: ['Can view', 'Can edit', 'File drop'],
 			copySuccess: true,
 			copied: false,
 
@@ -671,7 +678,7 @@ export default {
 		 * accordingly
 		 *
 		 * @param {Share} share the new share
-		 * @param {boolean} [update=false] do we update the current share ?
+		 * @param {boolean} [update] do we update the current share ?
 		 */
 		async pushNewLinkShare(share, update) {
 			try {
@@ -879,6 +886,12 @@ export default {
 	display: flex;
 	align-items: center;
 	min-height: 44px;
+
+	::v-deep &__avatar {
+		--size: 40px !important;
+		line-height: 40px !important;
+	}
+
 	&__desc {
 		display: flex;
 		flex-direction: column;

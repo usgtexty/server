@@ -29,120 +29,39 @@
 			:menu-position="'left'"
 			:url="share.shareWithAvatar" />
 
-		<component :is="share.shareWithLink ? 'a' : 'div'"
-			:title="tooltip"
-			:aria-label="tooltip"
-			:href="share.shareWithLink"
-			class="sharing-entry__desc">
-			<span>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></span>
-			<p v-if="hasStatus">
-				<span>{{ share.status.icon || '' }}</span>
-				<span>{{ share.status.message || '' }}</span>
-			</p>
-		</component>
-		<NcActions menu-align="right"
-			class="sharing-entry__actions"
-			@close="onMenuClose">
-			<template v-if="share.canEdit">
-				<!-- edit permission -->
-				<NcActionCheckbox ref="canEdit"
-					:checked.sync="canEdit"
-					:value="permissionsEdit"
-					:disabled="saving || !canSetEdit">
-					{{ t('files_sharing', 'Allow editing') }}
-				</NcActionCheckbox>
-
-				<!-- create permission -->
-				<NcActionCheckbox v-if="isFolder"
-					ref="canCreate"
-					:checked.sync="canCreate"
-					:value="permissionsCreate"
-					:disabled="saving || !canSetCreate">
-					{{ t('files_sharing', 'Allow creating') }}
-				</NcActionCheckbox>
-
-				<!-- delete permission -->
-				<NcActionCheckbox v-if="isFolder"
-					ref="canDelete"
-					:checked.sync="canDelete"
-					:value="permissionsDelete"
-					:disabled="saving || !canSetDelete">
-					{{ t('files_sharing', 'Allow deleting') }}
-				</NcActionCheckbox>
-
-				<!-- reshare permission -->
-				<NcActionCheckbox v-if="config.isResharingAllowed"
-					ref="canReshare"
-					:checked.sync="canReshare"
-					:value="permissionsShare"
-					:disabled="saving || !canSetReshare">
-					{{ t('files_sharing', 'Allow resharing') }}
-				</NcActionCheckbox>
-
-				<NcActionCheckbox v-if="isSetDownloadButtonVisible"
-					ref="canDownload"
-					:checked.sync="canDownload"
-					:disabled="saving || !canSetDownload">
-					{{ allowDownloadText }}
-				</NcActionCheckbox>
-
-				<!-- expiration date -->
-				<NcActionCheckbox :checked.sync="hasExpirationDate"
-					:disabled="config.isDefaultInternalExpireDateEnforced || saving"
-					@uncheck="onExpirationDisable">
-					{{ config.isDefaultInternalExpireDateEnforced
-						? t('files_sharing', 'Expiration date enforced')
-						: t('files_sharing', 'Set expiration date') }}
-				</NcActionCheckbox>
-				<NcActionInput v-if="hasExpirationDate"
-					ref="expireDate"
-					:is-native-picker="true"
-					:hide-label="true"
-					:class="{ error: errors.expireDate}"
-					:disabled="saving"
-					:value="new Date(share.expireDate)"
-					type="date"
-					:min="dateTomorrow"
-					:max="dateMaxEnforced"
-					@input="onExpirationChange">
-					{{ t('files_sharing', 'Enter a date') }}
-				</NcActionInput>
-
-				<!-- note -->
-				<template v-if="canHaveNote">
-					<NcActionCheckbox :checked.sync="hasNote"
-						:disabled="saving"
-						@uncheck="queueUpdate('note')">
-						{{ t('files_sharing', 'Note to recipient') }}
-					</NcActionCheckbox>
-					<NcActionTextEditable v-if="hasNote"
-						ref="note"
-						:class="{ error: errors.note}"
-						:disabled="saving"
-						:value="share.newNote || share.note"
-						icon="icon-edit"
-						@update:value="onNoteChange"
-						@submit="onNoteSubmit" />
-				</template>
+		<div class="sharing-entry__summary" @click="toggleQuickShareSelect">
+			<component :is="share.shareWithLink ? 'a' : 'div'"
+				:title="tooltip"
+				:aria-label="tooltip"
+				:href="share.shareWithLink"
+				class="sharing-entry__desc">
+				<span>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{
+					share.shareWithDisplayNameUnique }})</span></span>
+				<p v-if="hasStatus">
+					<span>{{ share.status.icon || '' }}</span>
+					<span>{{ share.status.message || '' }}</span>
+				</p>
+			</component>
+			<QuickShareSelect :options="options" :value.sync="selectedOption" :toggle="showDropdown" />
+		</div>
+		<NcButton class="sharing-entry__action"
+			:aria-label="t('files_sharing', 'Open Sharing Details')"
+			type="tertiary-no-background"
+			@click="openSharingDetails">
+			<template #icon>
+				<DotsHorizontalIcon :size="20" />
 			</template>
-
-			<NcActionButton v-if="share.canDelete"
-				icon="icon-close"
-				:disabled="saving"
-				@click.prevent="onDelete">
-				{{ t('files_sharing', 'Unshare') }}
-			</NcActionButton>
-		</NcActions>
+		</NcButton>
 	</li>
 </template>
 
 <script>
+import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
+import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 import NcAvatar from '@nextcloud/vue/dist/Components/NcAvatar.js'
-import NcActions from '@nextcloud/vue/dist/Components/NcActions.js'
-import NcActionButton from '@nextcloud/vue/dist/Components/NcActionButton.js'
-import NcActionCheckbox from '@nextcloud/vue/dist/Components/NcActionCheckbox.js'
-import NcActionInput from '@nextcloud/vue/dist/Components/NcActionInput.js'
-import NcActionTextEditable from '@nextcloud/vue/dist/Components/NcActionTextEditable.js'
+import DotsHorizontalIcon from 'vue-material-design-icons/DotsHorizontal.vue'
+
+import QuickShareSelect from './SharingEntryQuickShareSelect.vue'
 
 import SharesMixin from '../mixins/SharesMixin.js'
 
@@ -150,18 +69,20 @@ export default {
 	name: 'SharingEntry',
 
 	components: {
-		NcActions,
-		NcActionButton,
-		NcActionCheckbox,
-		NcActionInput,
-		NcActionTextEditable,
+		NcButton,
 		NcAvatar,
+		DotsHorizontalIcon,
+		NcSelect,
+		QuickShareSelect,
 	},
 
 	mixins: [SharesMixin],
 
 	data() {
 		return {
+			showDropdown: false,
+			selectedOption: 'Can view',
+			options: ['Can view', 'Can edit', 'File drop'],
 			permissionsEdit: OC.PERMISSION_UPDATE,
 			permissionsCreate: OC.PERMISSION_CREATE,
 			permissionsDelete: OC.PERMISSION_DELETE,
@@ -456,6 +377,12 @@ export default {
 		onMenuClose() {
 			this.onNoteSubmit()
 		},
+		openSharingDetails() {
+			this.$emit('open-sharing-details')
+		},
+		toggleQuickShareSelect() {
+			this.showDropdown = !this.showDropdown
+		},
 	},
 }
 </script>
@@ -463,23 +390,42 @@ export default {
 <style lang="scss" scoped>
 .sharing-entry {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
+	justify-content: center;
 	height: 44px;
+
+	::v-deep &__avatar {
+		--size: 40px !important;
+		line-height: 40px !important;
+	}
+
 	&__desc {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
-		padding: 8px;
+		padding-bottom: 0;
 		line-height: 1.2em;
+
 		p {
 			color: var(--color-text-maxcontrast);
 		}
+
 		&-unique {
 			color: var(--color-text-maxcontrast);
 		}
 	}
+
 	&__actions {
 		margin-left: auto;
 	}
+
+	&__summary {
+		padding-left: 0.2em;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		width: 100%;
+	}
+
 }
 </style>
