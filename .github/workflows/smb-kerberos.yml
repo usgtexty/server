@@ -48,6 +48,9 @@ jobs:
           docker exec --user 33 apache ./occ config:app:set user_saml type --value 'environment-variable'
           docker exec --user 33 apache ./occ saml:config:create
           docker exec --user 33 apache ./occ saml:config:set 1 --general-uid_mapping=REMOTE_USER
+          
+          # create user
+          docker exec -e OC_PASS=test --user 33 apache ./occ user:add 'testuser@DOMAIN.TEST' --password-from-env
 
           # setup external storage
           docker exec --user 33 apache ./occ app:enable files_external --force
@@ -61,9 +64,11 @@ jobs:
           chmod 0777 /tmp/shared/cookies
 
           echo "SAML login"
-          ./client-cmd.sh ${{ env.DC_IP }} curl -c /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login
+          ./client-cmd.sh ${{ env.DC_IP }} curl -i -c /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success
+          cat /tmp/shared/cookies/jar
           echo "Check we are logged in"
-          CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -b /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
+          CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -b /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
+          echo $CONTENT
           CONTENT=$(echo $CONTENT | head -n 1 | tr -d '[:space:]')
           [[ $CONTENT == "testfile" ]]
       - name: Show logs
