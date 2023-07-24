@@ -32,43 +32,15 @@ jobs:
           docker pull icewind1991/samba-krb-test-client
       - name: Setup AD-DC
         run: |
-          cp apps/files_external/tests/*.sh .
-          mkdir data
-          sudo chown -R 33 data apps config
-          DC_IP=$(./start-dc.sh)
-          ./start-apache.sh $DC_IP $PWD
+          DC_IP=$(apps/files_external/tests/start-dc.sh)
+          apps/files_external/tests/start-apache.sh $DC_IP $PWD
           echo "DC_IP=$DC_IP" >> $GITHUB_ENV
       - name: Set up Nextcloud
         run: |
-          docker exec --user 33 apache ./occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass password
-          docker exec --user 33 apache ./occ config:system:set trusted_domains 1 --value 'httpd.domain.test'
-
-          # setup user_saml
-          docker exec --user 33 apache ./occ app:enable user_saml --force
-          docker exec --user 33 apache ./occ config:app:set user_saml type --value 'environment-variable'
-          docker exec --user 33 apache ./occ saml:config:create
-          docker exec --user 33 apache ./occ saml:config:set 1 --general-uid_mapping=REMOTE_USER
-          
-          # create user
-          docker exec -e OC_PASS=test --user 33 apache ./occ user:add 'testuser@DOMAIN.TEST' --password-from-env
-
-          # setup external storage
-          docker exec --user 33 apache ./occ app:enable files_external --force
-          docker exec --user 33 apache ./occ files_external:create smb smb smb::kerberosapache
-          docker exec --user 33 apache ./occ files_external:config 1 host krb.domain.test
-          docker exec --user 33 apache ./occ files_external:config 1 share netlogon
-          docker exec --user 33 apache ./occ files_external:list
+          apps/files_external/tests/setup-sso-nc.sh
       - name: Test SSO
         run: |
-          echo "SAML login"
-          LOGIN_CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success)
-          echo "Check we are logged in"
-          [[ "$LOGIN_CONTENT" =~ "Location: success" ]]
-          echo "Getting test file"
-          CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
-          echo $CONTENT
-          CONTENT=$(echo $CONTENT | head -n 1 | tr -d '[:space:]')
-          [[ $CONTENT == "testfile" ]]
+          apps/files_external/tests/sso-setup/test-sso-smb.sh ${{ env.DC_IP }}
       - name: Show logs
         if: failure()
         run: |
