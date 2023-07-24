@@ -27,17 +27,20 @@ jobs:
           submodules: true
       - name: Pull images
         run: |
-          docker pull icewind1991/samba-krb-test-dc
-          docker pull icewind1991/samba-krb-test-apache
-          docker pull icewind1991/samba-krb-test-client
+          docker pull ghcr.io/icewind1991/samba-krb-test-dc
+          docker pull ghcr.io/icewind1991/samba-krb-test-apache
+          docker pull ghcr.io/icewind1991/samba-krb-test-client
+          docker tag ghcr.io/icewind1991/samba-krb-test-dc icewind1991/samba-krb-test-dc
+          docker tag ghcr.io/icewind1991/samba-krb-test-apache icewind1991/samba-krb-test-apache
+          docker tag ghcr.io/icewind1991/samba-krb-test-client icewind1991/samba-krb-test-client
       - name: Setup AD-DC
         run: |
-          DC_IP=$(apps/files_external/tests/start-dc.sh)
-          apps/files_external/tests/start-apache.sh $DC_IP $PWD
+          DC_IP=$(apps/files_external/tests/sso-setup/start-dc.sh)
+          apps/files_external/tests/sso-setup/start-apache.sh $DC_IP $PWD
           echo "DC_IP=$DC_IP" >> $GITHUB_ENV
       - name: Set up Nextcloud
         run: |
-          apps/files_external/tests/setup-sso-nc.sh
+          apps/files_external/tests/sso-setup/setup-sso-nc.sh
       - name: Test SSO
         run: |
           apps/files_external/tests/sso-setup/test-sso-smb.sh ${{ env.DC_IP }}
