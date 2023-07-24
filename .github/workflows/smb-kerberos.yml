@@ -60,21 +60,18 @@ jobs:
           docker exec --user 33 apache ./occ files_external:list
       - name: Test SSO
         run: |
-          mkdir /tmp/shared/cookies
-          chmod 0777 /tmp/shared/cookies
-
           echo "SAML login"
-          LOGIN_CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -c /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success)
+          LOGIN_CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success)
           echo "Check we are logged in"
           [[ "$LOGIN_CONTENT" =~ "Location: success" ]]
           echo "Getting test file"
-          CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -b /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
+          CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
           echo $CONTENT
           CONTENT=$(echo $CONTENT | head -n 1 | tr -d '[:space:]')
           [[ $CONTENT == "testfile" ]]
       - name: Show logs
         if: failure()
         run: |
-          docker exec --user 33 apache ./occ log:file
           FILEPATH=$(docker exec --user 33 apache ./occ log:file | grep "Log file:" | cut -d' ' -f3)
+          echo "$FILEPATH:"
           docker exec --user 33 apache cat $FILEPATH
