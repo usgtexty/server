@@ -64,9 +64,10 @@ jobs:
           chmod 0777 /tmp/shared/cookies
 
           echo "SAML login"
-          ./client-cmd.sh ${{ env.DC_IP }} curl -i -c /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success
-          cat /tmp/shared/cookies/jar
+          LOGIN_CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -c /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/index.php/apps/user_saml/saml/login?originalUrl=success)
           echo "Check we are logged in"
+          [[ "$LOGIN_CONTENT" =~ "Location: success" ]]
+          echo "Getting test file"
           CONTENT=$(./client-cmd.sh ${{ env.DC_IP }} curl -i -b /shared/cookies/jar -s --negotiate -u testuser@DOMAIN.TEST: --delegation always http://httpd.domain.test/remote.php/webdav/smb/test.txt)
           echo $CONTENT
           CONTENT=$(echo $CONTENT | head -n 1 | tr -d '[:space:]')
