@@ -115,6 +115,8 @@ class Connection extends \Doctrine\DBAL\Connection {
 			$this->dbDataCollector->setDebugStack($debugStack);
 			$this->_config->setSQLLogger($debugStack);
 		}
+
+		$this->setNestTransactionsWithSavepoints(true);
 	}
 
 	/**
