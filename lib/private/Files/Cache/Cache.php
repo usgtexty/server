@@ -365,6 +365,21 @@ class Cache implements ICache {
 			$data['name'] = $this->normalize($data['name']);
 		}
 
+		if (isset($data['size']) && $data['size'] < 0) {
+			$existingData = $this->get($id);
+			if ($existingData['size'] >= 0) {
+				\OC::$server->get(\Psr\Log\LoggerInterface::class)->debug(
+					'Storing data {data} for file {file}',
+					[
+						'app' => 'negative_size',
+						'id' => $id,
+						'data' => json_encode($data),
+						'exception' => new \Exception('Negative size for file ' . $existingData['path']),
+					]
+				);
+			}
+		}
+
 		[$values, $extensionValues] = $this->normalizeData($data);
 
 		if (count($values)) {
