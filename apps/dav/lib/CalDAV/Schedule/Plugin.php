@@ -148,12 +148,22 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 	}
 
 	/**
-	 * @param RequestInterface $request
-	 * @param ResponseInterface $response
-	 * @param VCalendar $vCal
-	 * @param mixed $calendarPath
-	 * @param mixed $modified
-	 * @param mixed $isNew
+	 * This method is triggered whenever there was a calendar object gets
+	 * created or updated.
+	 *
+	 *
+	 * Basically a copy of parent::calendarObjectChange, with the change
+	 *
+	 * From:
+	 * $addresses = $this->getAddressesForPrincipal($calendarNode->getOwner());
+	 *
+	 * To:
+	 * $addresses = $this->getAddressesForPrincipal($calendarNode->getPrincipalURI());
+	 *
+	 * @param mixed $calendarPath Path to calendar collection
+	 * @param mixed $modified The iCalendar object has been touched.
+	 * @param mixed $isNew Whether this was a new item or we're updating one
+	 * @return void
 	 */
 	public function calendarObjectChange(RequestInterface $request, ResponseInterface $response, VCalendar $vCal, $calendarPath, &$modified, $isNew) {
 		// Save the first path we get as a calendar-object-change request
@@ -161,7 +171,42 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 			$this->pathOfCalendarObjectChange = $request->getPath();
 		}
 
-		parent::calendarObjectChange($request, $response, $vCal, $calendarPath, $modified, $isNew);
+		if (!$this->scheduleReply($this->server->httpRequest)) {
+			return;
+		}
+
+		$calendarNode = $this->server->tree->getNodeForPath($calendarPath);
+
+		$addresses = $this->getAddressesForPrincipal(
+			$calendarNode->getPrincipalURI()
+		);
+
+		if (!$isNew) {
+			$node = $this->server->tree->getNodeForPath($request->getPath());
+			$oldObj = Reader::read($node->get());
+		} else {
+			$oldObj = null;
+		}
+
+		$this->processICalendarChange($oldObj, $vCal, $addresses, [], $modified);
+
+		if ($oldObj) {
+			// Destroy circular references so PHP will GC the object.
+			$oldObj->destroy();
+		}
+	}
+
+	/**
+	 * This method checks the 'Schedule-Reply' header
+	 * and returns false if it's 'F', otherwise true.
+	 *
+	 * @return bool
+	 */
+	private function scheduleReply(RequestInterface $request)
+	{
+		$scheduleReply = $request->getHeader('Schedule-Reply');
+
+		return 'F' !== $scheduleReply;
 	}
 
 	/**
