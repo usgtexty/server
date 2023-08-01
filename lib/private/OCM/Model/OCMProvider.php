@@ -204,7 +204,7 @@ class OCMProvider implements IOCMProvider, JsonSerializable {
 		}
 
 		$this->setEnabled(is_bool($data['enabled'] ?? '') ? $data['enabled'] : false)
-			 ->setApiVersion((string)$data['apiVersion'] ?? '')
+			 ->setApiVersion((string)($data['apiVersion'] ?? ''))
 			 ->setEndPoint($data['endPoint'] ?? '');
 
 		$resources = [];

@@ -31,7 +31,7 @@ use OC\OCM\Model\OCMProvider;
 use OC\OCM\Model\OCMResource;
 use OCP\Capabilities\ICapability;
 use OCP\IURLGenerator;
-use OCP\OCM\IOCMDiscoveryService;
+use OCP\OCM\Exceptions\OCMArgumentException;
 
 class Capabilities implements ICapability {
 
@@ -39,27 +39,14 @@ class Capabilities implements ICapability {
 
 	public function __construct(
 		private IURLGenerator $urlGenerator,
-		private IOCMDiscoveryService $discoveryService
 	) {
 	}
 
 	/**
 	 * Function an app uses to return the capabilities
 	 *
-	 * @return array{
-	 *     ocm: array{
-	 *         enabled: bool,
-	 *         apiVersion: string,
-	 *         endPoint: string,
-	 *         resourceTypes: array{
-	 *             name: string,
-	 *             shareTypes: string[],
-	 *             protocols: array{
-	 *                 webdav: string,
-	 *	           },
-	 *	       }[],
-	 *	   },
-	 * }
+	 * @return array{ ocm: OCMProvider }
+	 * @throws OCMArgumentException
 	 */
 	public function getCapabilities() {
 		$url = $this->urlGenerator->linkToRouteAbsolute('cloud_federation_api.requesthandlercontroller.addShare');
@@ -67,7 +54,13 @@ class Capabilities implements ICapability {
 		$provider = new OCMProvider();
 		$provider->setEnabled(true);
 		$provider->setApiVersion(self::API_VERSION);
-		$provider->setEndPoint(substr($url, 0, strrpos($url, '/')));
+
+		$pos = strrpos($url, '/');
+		if (!$pos) {
+			throw new OCMArgumentException('generated route should contains a slash character');
+		}
+
+		$provider->setEndPoint(substr($url, 0, $pos));
 
 		$resource = new OCMResource();
 		$resource->setName('file')
