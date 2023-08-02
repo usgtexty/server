@@ -33,7 +33,6 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Attribute\IgnoreOpenAPI;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Utility\ITimeFactory;
-use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\IRequest;
 use Sabre\VObject\ITip\Message;
@@ -167,11 +166,9 @@ class InvitationResponseController extends Controller {
 	 */
 	private function getTokenInformation(string $token) {
 		$query = $this->db->getQueryBuilder();
-		$query->select('i.*', 'c.principaluri')
-			->from('calendar_invitations', 'i')
-			->join('i', 'calendarobjects', 'o', $query->expr()->eq('i.uid', 'o.uid'))
-			->join('o', 'calendars', 'c', $query->expr()->eq('o.calendarid', 'c.id'))
-			->where($query->expr()->eq('i.token', $query->createNamedParameter($token)));
+		$query->select('*')
+			->from('calendar_invitations')
+			->where($query->expr()->eq('token', $query->createNamedParameter($token)));
 		$stmt = $query->execute();
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -203,7 +200,7 @@ class InvitationResponseController extends Controller {
 		$iTipMessage->sender = $row['attendee'];
 
 		if ($this->responseServer->isExternalAttendee($row['attendee'])) {
-			$iTipMessage->recipient = 'principal:' . $row['principaluri'];
+			$iTipMessage->recipient = $row['organizer'];
 		} else {
 			$iTipMessage->recipient = $row['attendee'];
 		}

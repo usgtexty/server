@@ -34,6 +34,7 @@ use OCA\DAV\CalDAV\CalDavBackend;
 use OCA\DAV\CalDAV\Calendar;
 use OCA\DAV\CalDAV\CalendarHome;
 use OCP\IConfig;
+use OCP\IDBConnection;
 use Psr\Log\LoggerInterface;
 use Sabre\CalDAV\ICalendar;
 use Sabre\DAV\INode;
@@ -57,11 +58,6 @@ use function \Sabre\Uri\split;
 
 class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 
-	/**
-	 * @var IConfig
-	 */
-	private $config;
-
 	/** @var ITip\Message[] */
 	private $schedulingResponses = [];
 
@@ -70,14 +66,11 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 
 	public const CALENDAR_USER_TYPE = '{' . self::NS_CALDAV . '}calendar-user-type';
 	public const SCHEDULE_DEFAULT_CALENDAR_URL = '{' . Plugin::NS_CALDAV . '}schedule-default-calendar-URL';
-	private LoggerInterface $logger;
 
-	/**
-	 * @param IConfig $config
-	 */
-	public function __construct(IConfig $config, LoggerInterface $logger) {
-		$this->config = $config;
-		$this->logger = $logger;
+	public function __construct(
+		private IConfig $config,
+		private LoggerInterface $logger,
+		private IDBConnection $db) {
 	}
 
 	/**
@@ -209,6 +202,19 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 		return 'F' !== $scheduleReply;
 	}
 
+	private function findPrincipalUriByUid(string $uid): ?string {
+		$query = $this->db->getQueryBuilder();
+		$query->select('c.principaluri')
+			->from('calendarobjects', 'co')
+			->join('co', 'calendars', 'c', $query->expr()->eq('co.calendarid', 'c.id'))
+			->where($query->expr()->eq('co.uid', $query->createNamedParameter($uid)));
+		$stmt = $query->execute();
+		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
+		$stmt->closeCursor();
+
+		return $row['principaluri'] ?? null;
+	}
+
 	/**
 	 * @inheritDoc
 	 */
@@ -219,6 +225,13 @@ class Plugin extends \Sabre\CalDAV\Schedule\Plugin {
 		// Strip VALARMs from incoming VEVENT
 		if ($vevent && isset($vevent->VALARM)) {
 			$vevent->remove('VALARM');
+		}
+
+		if ($iTipMessage->method === 'REPLY' || $iTipMessage->method === 'CANCEL') {
+			$principalUri = $this->findPrincipalUriByUid($iTipMessage->uid);
+			if ($principalUri !== null) {
+				$iTipMessage->recipient = 'principal:' . $principalUri;
+			}
 		}
 
 		parent::scheduleLocalDelivery($iTipMessage);
