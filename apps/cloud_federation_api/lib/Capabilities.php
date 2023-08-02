@@ -45,7 +45,20 @@ class Capabilities implements ICapability {
 	/**
 	 * Function an app uses to return the capabilities
 	 *
-	 * @return array{ ocm: OCMProvider }
+	 * @return array {
+	 *     ocm: array {
+	 *         enabled: bool,
+	 *         apiVersion: string,
+	 *         endPoint: string,
+	 *         resourceTypes: array {
+	 *             name: string,
+	 *             shareTypes: string[],
+	 *             protocols: array {
+	 *                 webdav: string,
+	 *               },
+	 *           }[],
+	 *       },
+	 * }
 	 * @throws OCMArgumentException
 	 */
 	public function getCapabilities() {
@@ -64,11 +77,11 @@ class Capabilities implements ICapability {
 
 		$resource = new OCMResource();
 		$resource->setName('file')
-			->setShareTypes(['user', 'group'])
-			->setProtocols(['webdav' => '/public.php/webdav/']);
+				 ->setShareTypes(['user', 'group'])
+				 ->setProtocols(['webdav' => '/public.php/webdav/']);
 
 		$provider->setResourceTypes([$resource]);
 
-		return ['ocm' => $provider];
+		return ['ocm' => $provider->jsonSerialize()];
 	}
 }

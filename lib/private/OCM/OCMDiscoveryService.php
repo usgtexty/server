@@ -26,12 +26,14 @@ declare(strict_types=1);
 
 namespace OC\OCM;
 
+use JsonException;
 use OC\OCM\Model\OCMProvider;
 use OCP\AppFramework\Http;
 use OCP\Http\Client\IClientService;
 use OCP\ICache;
 use OCP\ICacheFactory;
 use OCP\IConfig;
+use OCP\IL10N;
 use OCP\OCM\Exceptions\OCMProviderException;
 use OCP\OCM\IOCMDiscoveryService;
 use OCP\OCM\IOCMProvider;
@@ -42,11 +44,17 @@ use Psr\Log\LoggerInterface;
  */
 class OCMDiscoveryService implements IOCMDiscoveryService {
 	private ICache $cache;
+	private array $supportedAPIVersion =
+		[
+			'1.0-proposal1',
+			'1.0',
+		];
 
 	public function __construct(
 		ICacheFactory $cacheFactory,
 		private IClientService $clientService,
 		private IConfig $config,
+		private IL10N $l10n,
 		private LoggerInterface $logger
 	) {
 		$this->cache = $cacheFactory->createDistributed('ocm-discovery');
@@ -65,9 +73,13 @@ class OCMDiscoveryService implements IOCMDiscoveryService {
 		$provider = new OCMProvider($remote);
 
 		if (!$skipCache) {
-			$provider->import(json_decode($this->cache->get($remote) ?? '', true));
-			if ($provider->looksValid()) {
-				return $provider; // if cache looks valid, we use it
+			try {
+				$provider->import(json_decode($this->cache->get($remote) ?? '', true, 8, JSON_THROW_ON_ERROR));
+				if ($provider->looksValid() && in_array($provider->getApiVersion(), $this->supportedAPIVersion)) {
+					return $provider; // if cache looks valid, we use it
+				}
+			} catch (JsonException $e) {
+				// we ignore cache on error during json_decode()
 			}
 		}
 
@@ -85,7 +97,7 @@ class OCMDiscoveryService implements IOCMDiscoveryService {
 			if ($response->getStatusCode() === Http::STATUS_OK) {
 				$body = $response->getBody();
 				// update provider with data returned by the request
-				$provider->import(json_decode($body, true));
+				$provider->import(json_decode($body, true, 8, JSON_THROW_ON_ERROR));
 				$this->cache->set($remote, $body, 60 * 60 * 24);
 			}
 		} catch (\Exception $e) {
@@ -96,7 +108,11 @@ class OCMDiscoveryService implements IOCMDiscoveryService {
 		}
 
 		if (!$provider->looksValid()) {
-			throw new OCMProviderException('remote provider does not look valid');
+			throw new OCMProviderException($this->l10n->t('remote provider \'%s\' does not look valid', [$remote]));
+		}
+
+		if (!in_array($provider->getApiVersion(), $this->supportedAPIVersion)) {
+			throw new OCMProviderException($this->l10n->t('unsupported version (%1)', [$provider->getApiVersion()]));
 		}
 
 		return $provider;

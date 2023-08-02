@@ -106,7 +106,7 @@ class OCMProvider implements IOCMProvider, JsonSerializable {
 	 *
 	 * @return $this
 	 */
-	public function addResource(OCMResource $resource): self {
+	public function addResourceType(OCMResource $resource): self {
 		$this->resourceTypes[] = $resource;
 
 		return $this;

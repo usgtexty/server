@@ -52,11 +52,6 @@ class CloudFederationProviderManager implements ICloudFederationProviderManager 
 
 	/** @var array list of available cloud federation providers */
 	private array $cloudFederationProvider = [];
-	private array $ocmEndPoints = [];
-	private array $supportedAPIVersion = [
-		'1.0-proposal1',
-		'1.0',
-	];
 
 	public function __construct(
 		private IConfig $config,

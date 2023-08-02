@@ -85,7 +85,7 @@ class OCMController extends Controller {
 
 			return new DataResponse(
 				['message' => '/ocm-provider/ not supported'],
-				Http::STATUS_NOT_FOUND
+				Http::STATUS_INTERNAL_SERVER_ERROR
 			);
 		}
 	}

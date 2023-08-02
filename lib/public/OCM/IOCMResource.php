@@ -48,13 +48,14 @@ interface IOCMResource {
 	 * get name of the resource
 	 *
 	 * @return string
+	 * @since 28.0.0
 	 */
 	public function getName(): string;
 
 	/**
 	 * set share types
 	 *
-	 * @param array $shareTypes
+	 * @param IOCMResource[] $shareTypes
 	 *
 	 * @return self
 	 * @since 28.0.0
@@ -64,7 +65,7 @@ interface IOCMResource {
 	/**
 	 * get share types
 	 *
-	 * @return array
+	 * @return IOCMResource[]
 	 * @since 28.0.0
 	 */
 	public function getShareTypes(): array;
@@ -72,7 +73,7 @@ interface IOCMResource {
 	/**
 	 * set available protocols
 	 *
-	 * @param array $protocols
+	 * @param array<string, string> $protocols
 	 *
 	 * @return self
 	 * @since 28.0.0
@@ -82,7 +83,7 @@ interface IOCMResource {
 	/**
 	 * get configured protocols
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 * @since 28.0.0
 	 */
 	public function getProtocols(): array;

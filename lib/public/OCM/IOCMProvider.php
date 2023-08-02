@@ -98,7 +98,7 @@ interface IOCMProvider {
 	 * @return self
 	 * @since 28.0.0
 	 */
-	public function addResource(OCMResource $resource): self;
+	public function addResourceType(OCMResource $resource): self;
 
 	/**
 	 * set resources
