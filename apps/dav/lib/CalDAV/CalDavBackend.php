@@ -2172,8 +2172,11 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 	 */
 	public function getCalendarObjectByUID($principalUri, $uid) {
 		// query for shared writable calendars
-		$principals = $this->principalBackend->getGroupMembership($principalUri, true);
-		$principals = array_merge($principals, $this->principalBackend->getCircleMembership($principalUri));
+		$principals = array_merge(
+			[$principalUri],
+			$this->principalBackend->getGroupMembership($principalUri, true),
+			$this->principalBackend->getCircleMembership($principalUri)
+		);
 
 		$query = $this->db->getQueryBuilder();
 		$query
@@ -2191,14 +2194,11 @@ class CalDavBackend extends AbstractBackend implements SyncSupport, Subscription
 			->andWhere($query->expr()->orX(
 				$query->expr()->eq('c.principaluri', $query->createNamedParameter($principalUri)),
 				$query->expr()->andX(
-					$query->expr()->in('ds.principaluri', $query->createParameter('shareprincipal')),
-					$query->expr()->eq('ds.type', $query->createParameter('type')),
-					$query->expr()->eq('ds.access', $query->createParameter('access')),
+					$query->expr()->in('ds.principaluri', $query->createNamedParameter($principals, IQueryBuilder::PARAM_STR_ARRAY)),
+					$query->expr()->eq('ds.type', $query->createNamedParameter('calendar')),
+					$query->expr()->eq('ds.access', $query->createNamedParameter(Backend::ACCESS_READ_WRITE)),
 				)
-			))
-			->setParameter('access', Backend::ACCESS_READ_WRITE)
-			->setParameter('type', 'calendar')
-			->setParameter('shareprincipal', $principals, \Doctrine\DBAL\Connection::PARAM_STR_ARRAY);
+			));
 		$stmt = $query->executeQuery();
 		$calendarObjectUri = null;
 		while ($row = $stmt->fetch()) {
