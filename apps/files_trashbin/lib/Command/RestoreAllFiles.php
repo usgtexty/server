@@ -25,8 +25,12 @@ use OCP\IL10N;
 use OCP\IUserBackend;
 use OCA\Files_Trashbin\Trashbin;
 use OCA\Files_Trashbin\Helper;
+use OCA\Files_Trashbin\Trash\ITrashItem;
+use OCA\Files_Trashbin\Trash\ITrashManager;
+use OCA\Files_Trashbin\Trash\TrashItem;
 use OCP\IUserManager;
 use OCP\L10N\IFactory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,20 +48,28 @@ class RestoreAllFiles extends Base {
 	/** @var \OCP\IDBConnection */
 	protected $dbConnection;
 
+	/** @var ITrashManager */
+	protected $trashManager;
+
 	/** @var IL10N */
 	protected $l10n;
+
+	/** @var LoggerInterface */
+	protected $logger;
 
 	/**
 	 * @param IRootFolder $rootFolder
 	 * @param IUserManager $userManager
 	 * @param IDBConnection $dbConnection
 	 */
-	public function __construct(IRootFolder $rootFolder, IUserManager $userManager, IDBConnection $dbConnection, IFactory $l10nFactory) {
+	public function __construct(IRootFolder $rootFolder, IUserManager $userManager, IDBConnection $dbConnection, ITrashManager $trashManager, IFactory $l10nFactory, LoggerInterface $logger) {
 		parent::__construct();
 		$this->userManager = $userManager;
 		$this->rootFolder = $rootFolder;
 		$this->dbConnection = $dbConnection;
+		$this->trashManager = $trashManager;
 		$this->l10n = $l10nFactory->get('files_trashbin');
+		$this->logger = $logger;
 	}
 
 	protected function configure(): void {
@@ -129,35 +141,37 @@ class RestoreAllFiles extends Base {
 		\OC_Util::setupFS($uid);
 		\OC_User::setUserId($uid);
 
-		// Sort by most recently deleted first
-		// (Restoring in order of most recently deleted preserves nested file paths.
-		// See https://github.com/nextcloud/server/issues/31200#issuecomment-1130358549)
-		$filesInTrash = Helper::getTrashFiles('/', $uid, 'mtime', true);
+		$user = $this->userManager->get($uid);
+		$userTrashItems = $this->trashManager->listTrashRoot($user);
 
-		$trashCount = count($filesInTrash);
+		$trashCount = count($userTrashItems);
 		if ($trashCount == 0) {
 			$output->writeln("User has no deleted files in the trashbin");
 			return;
 		}
 		$output->writeln("Preparing to restore <info>$trashCount</info> files...");
 		$count = 0;
-		foreach ($filesInTrash as $trashFile) {
-			$filename = $trashFile->getName();
-			$timestamp = $trashFile->getMtime();
-			$humanTime = $this->l10n->l('datetime', $timestamp);
+		foreach($userTrashItems as $trashItem) {
+			$filename = $trashItem->getName();
+			$humanTime = $this->l10n->l('datetime', $trashItem->getDeletedTime());
 			$output->write("File <info>$filename</info> originally deleted at <info>$humanTime</info> ");
-			$file = Trashbin::getTrashFilename($filename, $timestamp);
-			$location = Trashbin::getLocation($uid, $filename, (string) $timestamp);
-			if ($location === '.') {
-				$location = '';
-			}
+
+			// We use getTitle() here instead of getOriginalLocation() because 
+			// for groupfolders this contains the groupfolder name itself as prefix
+			$location = $trashItem->getTitle();
 			$output->write("restoring to <info>/$location</info>:");
-			if (Trashbin::restore($file, $filename, $timestamp)) {
-				$count = $count + 1;
-				$output->writeln(" <info>success</info>");
-			} else {
+
+			try {
+				$trashItem->getTrashBackend()->restoreItem($trashItem);
+			} catch (\Throwable $e) {
 				$output->writeln(" <error>failed</error>");
+				$output->writeln("<error>" . $e->getMessage() . "</error>. Detailed information can be found in the server logs.");
+				$this->logger->error($e->getMessage(), ['exception' => $e]);
+				continue;
 			}
+
+			$count = $count + 1;
+			$output->writeln(" <info>success</info>");
 		}
 
 		$output->writeln("Successfully restored <info>$count</info> out of <info>$trashCount</info> files.");
