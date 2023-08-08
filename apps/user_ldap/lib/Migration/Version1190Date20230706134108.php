@@ -51,7 +51,6 @@ class Version1190Date20230706134108 extends SimpleMigrationStep {
 			$table->addColumn('id', Types::BIGINT, [
 				'autoincrement' => true,
 				'notnull' => true,
-				'length' => 4,
 			]);
 			$table->addColumn('groupid', Types::STRING, [
 				'notnull' => true,
