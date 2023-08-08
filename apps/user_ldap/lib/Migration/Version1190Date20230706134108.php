@@ -64,6 +64,7 @@ class Version1190Date20230706134108 extends SimpleMigrationStep {
 				'default' => '',
 			]);
 			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['groupid', 'userid'], 'user_ldap_membership_unique');
 			return $schema;
 		} else {
 			return null;
