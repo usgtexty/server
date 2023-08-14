@@ -25,21 +25,6 @@
 			</a>
 		</li>
 	<?php } ?>
-
-		<li>
-			<a href="https://docs.nextcloud.com" class="icon-category-office" target="_blank" rel="noreferrer noopener">
-				<span class="help-list__text">
-					<?php p($l->t('Documentation')); ?> ↗
-				</span>
-			</a>
-		</li>
-		<li>
-			<a href="https://help.nextcloud.com" class="icon-comment" target="_blank" rel="noreferrer noopener">
-				<span class="help-list__text">
-					<?php p($l->t('Forum')); ?> ↗
-				</span>
-			</a>
-		</li>
 </div>
 
 <div id="app-content" class="help-includes">
